@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crafted</title>
+    <link rel="stylesheet" href="../css/popup.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="brand-container">
+                <img src="../icons/logo.png" alt="Crafted Logo" class="brand-logo">
+            </div>
+            <p>Refined tweet generation</p>
+        </header>
+
+        <div class="status" id="status"></div>
+
+        <div class="tweet-container">
+            <textarea id="tweetText" class="tweet-text"
+                placeholder="Paste article URL and click 'Generate'..."></textarea>
+            <div id="charCountContainer" class="char-count">
+                <span id="charCount">0</span>/280
+            </div>
+        </div>
+
+        <div class="action-bar secondary">
+            <button class="btn btn-small" id="generateBtn" title="Generate New">
+                <span>✨ Generate</span>
+            </button>
+            <button class="btn btn-small" id="regenerateBtn" title="Regenerate Variation">
+                <span>🔄 Again</span>
+            </button>
+            <button class="btn btn-small" id="copyBtn" title="Copy to Clipboard">
+                <span>📋 Copy</span>
+            </button>
+        </div>
+
+        <div class="action-bar primary">
+            <button class="btn btn-large" id="postBtn" disabled>
+                <span>Post to X</span>
+            </button>
+        </div>
+
+        <footer class="footer">
+            <button type="button" id="openSettings" class="settings-link-btn">
+                <span>⚙️ Settings</span>
+            </button>
+            <label class="auto-post-label">
+                <input type="checkbox" id="autoPost">
+                <span>Auto-post</span>
+            </label>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/oauth-signer.js"></script>
+    <script src="../js/popup.js"></script>
+</body>
+
+</html>

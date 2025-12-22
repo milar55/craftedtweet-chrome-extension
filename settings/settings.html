@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Article to Tweet</title>
+    <link rel="stylesheet" href="../css/settings.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>⚙️ Settings</h1>
+            <p>Configure your studio experience</p>
+        </header>
+
+        <section class="config-section">
+            <h2>AI & Prompt</h2>
+            <div class="form-group">
+                <label for="openaiKey">OpenAI API Key</label>
+                <input type="password" id="openaiKey" placeholder="sk-..." />
+            </div>
+            <div class="form-group">
+                <label for="aiModel">AI Model</label>
+                <select id="aiModel">
+                    <option value="gpt-4o-mini">GPT-4o Mini (Fast)</option>
+                    <option value="gpt-4o">GPT-4o (Smart)</option>
+                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="systemPrompt">System Prompt (AI Instructions)</label>
+                <textarea id="systemPrompt" rows="4" placeholder="Instructions for the AI..."></textarea>
+                <p class="help-text">Define how the AI should write your tweets.</p>
+            </div>
+        </section>
+
+        <section class="config-section">
+            <h2>Extraction & Twitter</h2>
+            <div class="form-group">
+                <label for="maxArticleLength">Max Article Length (characters)</label>
+                <input type="number" id="maxArticleLength" value="4000" min="1000" max="15000" />
+                <p class="help-text">Max context sent to AI. High values use more tokens.</p>
+            </div>
+
+            <div class="grid-form">
+                <div class="form-group">
+                    <label for="twitterApiKey">Twitter API Key</label>
+                    <input type="password" id="twitterApiKey" />
+                </div>
+                <div class="form-group">
+                    <label for="twitterApiSecret">Twitter API Secret</label>
+                    <input type="password" id="twitterApiSecret" />
+                </div>
+                <div class="form-group">
+                    <label for="twitterAccessToken">Access Token</label>
+                    <input type="password" id="twitterAccessToken" />
+                </div>
+                <div class="form-group">
+                    <label for="twitterAccessTokenSecret">Access Secret</label>
+                    <input type="password" id="twitterAccessTokenSecret" />
+                </div>
+            </div>
+        </section>
+
+        <div class="controls">
+            <button class="btn" id="saveBtn">Save Changes</button>
+            <button class="btn btn-secondary" id="resetBtn">Reset Defaults</button>
+        </div>
+
+        <div class="status" id="status"></div>
+    </div>
+
+    <script src="../js/settings.js"></script>
+</body>
+
+</html>
