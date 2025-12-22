@@ -1,5 +1,7 @@
 # Crafted 🖋️
 
+![Crafted Logo](icons/logo.png)
+
 **Crafted** is a premium Chrome extension that transforms long-form articles into perfectly distilled, shareable tweets using AI.
 
 ## Highlights
