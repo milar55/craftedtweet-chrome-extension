@@ -1,0 +1,16 @@
+# Credentials (IMPORTANT)
+# These are handled by chrome.storage, so don't include them if you hardcode them for testing
+# (The current architecture doesn't use environment files, but it's good practice)
+.env
+api_keys.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Developer noise
+.vscode/
+.idea/
+*.log
+node_modules/
+package-lock.json

@@ -1,115 +1,50 @@
-_# Article to Tweet Generator Chrome Extension
+# Crafted 🖋️
 
-This Chrome extension allows you to read an article from any webpage, generate a clever tweet about it using AI, and post it to your Twitter account.
+**Crafted** is a premium Chrome extension that transforms long-form articles into engaging, shareable tweets using AI. Designed for content creators and social media professionals, Crafted streamlines your workflow from reading to posting.
 
-_## Installation
+![Crafted Logo](icons/logo.png)
 
-1.  Download the `twitter-tweet-extension.zip` file.
-2.  Unzip the downloaded file to a permanent location on your computer.
-3.  Open Google Chrome and navigate to `chrome://extensions`.
-4.  Enable "Developer mode" in the top right corner.
-5.  Click on "Load unpacked" and select the unzipped `twitter-tweet-extension` folder.
-6.  The extension icon will appear in your Chrome toolbar.
+## Features
 
-_## Configuration
+-   **AI-Powered Generation**: Uses OpenAI's GPT models (configurable in settings) to distill articles into clever tweets.
+-   **Branded Experience**: Featuring an elegant sepia-themed studio UI.
+-   **Full Control**: Edit generated tweets in an auto-growing editor before they go live.
+-   **Direct Posting**: Post directly to X (Twitter) using secure OAuth 1.0a authentication.
+-   **Customizable Prompt**: Tailor the AI's "personality" by defining your own system prompt.
+-   **Configurable Context**: Choose how much article content is sent to the AI (up to 15,000 characters).
 
-Before using the extension, you need to configure it with your OpenAI and Twitter API keys using the settings page.
+## Installation
 
-**1. Open the Settings Page:**
+1.  Clone this repository or download the source code.
+2.  Open Chrome and navigate to `chrome://extensions`.
+3.  Enable **Developer mode** (toggle in the top right).
+4.  Click **Load unpacked** and select the extension folder.
 
-There are two ways to open the settings page:
+## Setup
 
-*   **Method 1:** Right-click the extension icon in your Chrome toolbar and select "⚙️ Open Settings" from the context menu
-*   **Method 2:** Click the extension icon, then click the "⚙️ Settings" link at the bottom of the popup
+1.  Click the **Crafted** icon in your toolbar and go to **Settings**.
+2.  Enter your **OpenAI API Key**.
+3.  Enter your **Twitter API Credentials** (OAuth 1.0a):
+    -   API Key & Secret
+    -   Access Token & Secret
+4.  Choose your preferred AI model (e.g., `gpt-4o-mini`).
+5.  Save your settings.
 
-Both methods will open the settings page where you can enter your API keys
+## Usage
 
-**2. Enter Your API Keys:**
+1.  Navigate to any article you want to tweet about.
+2.  Click the **Crafted** extension icon.
+3.  Click **✨ Generate**.
+4.  Review and edit the tweet in the text area.
+5.  Click **Post to X** or **📋 Copy** to use it elsewhere.
 
-*   **OpenAI API Key:** Enter your OpenAI API key (starts with `sk-...`)
-*   **Twitter Bearer Token:** Enter your Twitter API Bearer Token from your developer account
-*   Click "Save Settings"
+## Built With
 
-**3. Additional Settings:**
+-   Vanilla JavaScript (ES6+)
+-   Custom CSS (Sepia Design System)
+-   OpenAI Chat Completions API
+-   Twitter API v2
 
-*   **Auto-Post After Generation:** Toggle to automatically post tweets after they're generated
-*   **Max Article Length:** Set the maximum characters to send to AI (default: 4000)
-*   **AI Model:** Choose which AI model to use for tweet generation
+## License
 
-**4. Save Your Settings:**
-
-*   Click "Save Settings" to save your configuration
-*   The settings are stored locally and will persist across browser sessions
-
-_## How to Use
-
-1.  Navigate to an article you want to tweet about.
-2.  Click the extension icon in your Chrome toolbar.
-3.  Click the "Generate Tweet" button.
-4.  The extension will read the article, and the AI will generate a tweet.
-5.  The generated tweet will appear in the popup.
-6.  Click "Copy Tweet" to copy it to your clipboard, or "Post to Twitter" to publish it.
-7.  If you have "Auto-post" enabled, the tweet will be posted automatically.
-8.  Click "Regenerate" to get a different version of the tweet.
-
-_## Chrome Web Store Publication
-
-This extension is designed to be published on the Chrome Web Store. Here's what you need to know:
-
-**Security:**
-- API keys are stored locally in chrome.storage.local (encrypted by Chrome)
-- No hardcoded API keys in the code
-- Each user manages their own keys via the settings page
-- Keys are never transmitted to any server (unless posting a tweet)
-
-**User Experience:**
-- Modern, intuitive interface
-- Real-time feedback and error handling
-- Copy to clipboard functionality
-- Regenerate tweet option
-- Auto-post feature
-
-**Requirements:**
-- Users need their own OpenAI API key (free tier available)
-- Users need their own Twitter Developer account and Bearer Token
-- Clear instructions provided in README
-
-_## Troubleshooting
-
-**Issue: "Twitter API credentials not set" error**
-- Solution: Right-click extension icon → Options → Enter your Twitter Bearer Token
-
-**Issue: "OpenAI API key must start with sk-" error**
-- Solution: Enter a valid OpenAI API key in the settings page
-
-**Issue: Tweet generation fails**
-- Solution: Check your OpenAI API key is valid and has sufficient quota
-
-**Issue: Cannot post to Twitter**
-- Solution: Check your Twitter Bearer Token is valid and has tweet posting permissions
-
-_## Features
-
-*   **Modern UI:** A simple and intuitive interface.
-*   **AI-Powered:** Generates clever and relevant tweets.
-*   **Character Count:** Keeps track of the tweet length.
-*   **Auto-Post:** Automatically posts tweets after generation (optional).
-*   **Secure Storage:** API keys are stored locally.
-
-_## Files Included
-
-*   `manifest.json`: The extension's manifest file.
-*   `popup/popup.html`: The HTML for the extension's popup.
-*   `css/popup.css`: The CSS for styling the popup.
-*   `js/popup.js`: The JavaScript for the popup, including tweet generation and posting logic.
-*   `js/content.js`: The content script for extracting article text.
-*   `js/background.js`: The background service worker.
-*   `icons/`: Folder containing the extension icons.
-*   `settings/settings.html`: Settings page for API key configuration
-*   `css/settings.css`: CSS for the settings page
-*   `js/settings.js`: JavaScript for settings page functionality
-*   `README.md`: Installation and usage instructions
-
-_## Disclaimer
-
-This is a proof-of-concept extension. The API key handling is simplified for this example. In a production environment, you would want to use a more secure method for storing and accessing API keys, such as a backend server or more advanced secure storage options.
+MIT
