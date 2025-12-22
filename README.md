@@ -1,50 +1,30 @@
 # Crafted 🖋️
 
-**Crafted** is a premium Chrome extension that transforms long-form articles into engaging, shareable tweets using AI. Designed for content creators and social media professionals, Crafted streamlines your workflow from reading to posting.
+**Crafted** is a premium Chrome extension that transforms long-form articles into perfectly distilled, shareable tweets using AI.
 
-![Crafted Logo](icons/logo.png)
+## Highlights
+- **Elegant UI**: Minimalist sepia-themed studio design.
+- **AI Customization**: Set your own "System Prompt" and context length (up to 15k chars).
+- **Secure Posting**: Direct posting to X via OAuth 1.0a.
+- **Smart Extraction**: Automatically pulls core content from any article URL.
 
-## Features
+## Chrome Installation
+1.  **Download/Clone** this repository to a local folder.
+2.  Open Chrome and go to **`chrome://extensions`**.
+3.  Turn on **"Developer mode"** (top right toggle).
+4.  Click **"Load unpacked"** and select the extension folder.
+5.  **Pin it** to your toolbar for easy access.
 
--   **AI-Powered Generation**: Uses OpenAI's GPT models (configurable in settings) to distill articles into clever tweets.
--   **Branded Experience**: Featuring an elegant sepia-themed studio UI.
--   **Full Control**: Edit generated tweets in an auto-growing editor before they go live.
--   **Direct Posting**: Post directly to X (Twitter) using secure OAuth 1.0a authentication.
--   **Customizable Prompt**: Tailor the AI's "personality" by defining your own system prompt.
--   **Configurable Context**: Choose how much article content is sent to the AI (up to 15,000 characters).
-
-## Installation
-
-1.  Clone this repository or download the source code.
-2.  Open Chrome and navigate to `chrome://extensions`.
-3.  Enable **Developer mode** (toggle in the top right).
-4.  Click **Load unpacked** and select the extension folder.
-
-## Setup
-
-1.  Click the **Crafted** icon in your toolbar and go to **Settings**.
-2.  Enter your **OpenAI API Key**.
-3.  Enter your **Twitter API Credentials** (OAuth 1.0a):
-    -   API Key & Secret
-    -   Access Token & Secret
-4.  Choose your preferred AI model (e.g., `gpt-4o-mini`).
-5.  Save your settings.
+## Quick Setup
+1.  Open **Settings** from the extension popup.
+2.  Add your **OpenAI API Key** (e.g., GPT-4o-mini).
+3.  Add your **Twitter API Keys** (Consumer & Access tokens).
+4.  (Optional) Tweak the **System Prompt** to change the AI's writing style.
 
 ## Usage
+1.  Navigate to any article.
+2.  Click **Crafted** and hit **✨ Generate**.
+3.  Edit the text if needed, then click **Post to X**.
 
-1.  Navigate to any article you want to tweet about.
-2.  Click the **Crafted** extension icon.
-3.  Click **✨ Generate**.
-4.  Review and edit the tweet in the text area.
-5.  Click **Post to X** or **📋 Copy** to use it elsewhere.
-
-## Built With
-
--   Vanilla JavaScript (ES6+)
--   Custom CSS (Sepia Design System)
--   OpenAI Chat Completions API
--   Twitter API v2
-
-## License
-
-MIT
+---
+*Built with Vanilla JS, CSS, and OpenAI.*
