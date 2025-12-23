@@ -14,7 +14,7 @@ const maxArticleLengthInput = document.getElementById('maxArticleLength');
 const aiModelSelect = document.getElementById('aiModel');
 const saveBtn = document.getElementById('saveBtn');
 const resetBtn = document.getElementById('resetBtn');
-const status = document.getElementById('status');
+const statusMessage = document.getElementById('status');
 
 const DEFAULT_PROMPT = 'You are a social media expert who creates engaging tweets. Write a clever, concise tweet (max 280 characters) about the article. Include 1-2 relevant hashtags. Make it interesting and shareable. DO NOT use em dashes (—) or colons (:) in the tweet.';
 
@@ -40,6 +40,11 @@ function loadSettings() {
         systemPromptInput.value = result.systemPrompt || DEFAULT_PROMPT;
         maxArticleLengthInput.value = result.maxArticleLength || 4000;
         aiModelSelect.value = result.aiModel || 'gpt-4o-mini';
+        // Load autoUrlReply setting
+        const autoUrlReplyCheckbox = document.getElementById('autoUrlReply');
+        if (result.autoUrlReply !== undefined) {
+            autoUrlReplyCheckbox.checked = result.autoUrlReply;
+        }
 
         const twitterKeys = [
             { el: twitterApiKeyInput, val: result.twitterApiKey },
@@ -82,9 +87,13 @@ async function handleSave() {
         };
 
         await chrome.storage.local.set(settings);
+        // Also persist autoUrlReply checkbox state
+        const autoUrlReplyCheckbox = document.getElementById('autoUrlReply');
+        if (autoUrlReplyCheckbox) {
+            await chrome.storage.local.set({ autoUrlReply: autoUrlReplyCheckbox.checked });
+        }
         showStatus('Saved!', 'success');
         loadSettings();
-
     } catch (error) {
         showStatus(`Error: ${error.message}`, 'error');
     } finally {
@@ -108,6 +117,6 @@ function handleReset() {
 }
 
 function showStatus(message, type) {
-    status.textContent = message;
-    status.className = `status ${type}`;
+    statusMessage.textContent = message;
+    statusMessage.className = `status ${type}`;
 }
