@@ -1,6 +1,3 @@
-_# Article to Tweet Generator Chrome Extension
-
-This Chrome extension allows you to read an article from any webpage, generate a clever tweet about it using AI, and post it to your Twitter account.
 
 _## Installation
 
@@ -52,22 +49,12 @@ _## How to Use
 7.  If you have "Auto-post" enabled, the tweet will be posted automatically.
 8.  Click "Regenerate" to get a different version of the tweet.
 
-_## Chrome Web Store Publication
-
-This extension is designed to be published on the Chrome Web Store. Here's what you need to know:
 
 **Security:**
 - API keys are stored locally in chrome.storage.local (encrypted by Chrome)
 - No hardcoded API keys in the code
 - Each user manages their own keys via the settings page
 - Keys are never transmitted to any server (unless posting a tweet)
-
-**User Experience:**
-- Modern, intuitive interface
-- Real-time feedback and error handling
-- Copy to clipboard functionality
-- Regenerate tweet option
-- Auto-post feature
 
 **Requirements:**
 - Users need their own OpenAI API key (free tier available)
@@ -88,28 +75,7 @@ _## Troubleshooting
 **Issue: Cannot post to Twitter**
 - Solution: Check your Twitter Bearer Token is valid and has tweet posting permissions
 
-_## Features
 
-*   **Modern UI:** A simple and intuitive interface.
-*   **AI-Powered:** Generates clever and relevant tweets.
-*   **Character Count:** Keeps track of the tweet length.
-*   **Auto-Post:** Automatically posts tweets after generation (optional).
-*   **Secure Storage:** API keys are stored locally.
 
-_## Files Included
 
-*   `manifest.json`: The extension's manifest file.
-*   `popup/popup.html`: The HTML for the extension's popup.
-*   `css/popup.css`: The CSS for styling the popup.
-*   `js/popup.js`: The JavaScript for the popup, including tweet generation and posting logic.
-*   `js/content.js`: The content script for extracting article text.
-*   `js/background.js`: The background service worker.
-*   `icons/`: Folder containing the extension icons.
-*   `settings/settings.html`: Settings page for API key configuration
-*   `css/settings.css`: CSS for the settings page
-*   `js/settings.js`: JavaScript for settings page functionality
-*   `README.md`: Installation and usage instructions
 
-_## Disclaimer
-
-This is a proof-of-concept extension. The API key handling is simplified for this example. In a production environment, you would want to use a more secure method for storing and accessing API keys, such as a backend server or more advanced secure storage options.

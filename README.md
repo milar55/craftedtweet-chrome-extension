@@ -28,5 +28,23 @@
 2.  Click **Crafted** and hit **✨ Generate**.
 3.  Edit the text if needed, then click **Post to X**.
 
+
+## Files Included
+
+*   `manifest.json`: The extension's manifest file.
+*   `popup/popup.html`: The HTML for the extension's popup.
+*   `css/popup.css`: The CSS for styling the popup.
+*   `js/popup.js`: The JavaScript for the popup, including tweet generation and posting logic.
+*   `js/content.js`: The content script for extracting article text.
+*   `js/background.js`: The background service worker.
+*   `icons/`: Folder containing the extension icons.
+*   `settings/settings.html`: Settings page for API key configuration
+*   `css/settings.css`: CSS for the settings page
+*   `js/settings.js`: JavaScript for settings page functionality
+*   `README.md`: Installation and usage instructions
+
+## Disclaimer
+
+This is a proof-of-concept extension. The API key handling is simplified for this example. In a production environment, you would want to use a more secure method for storing and accessing API keys, such as a backend server or more advanced secure storage options.
 ---
 *Built with Vanilla JS, CSS, and OpenAI.*

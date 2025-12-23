@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Crafted",
     "version": "1.2",
-    "description": "Refined tweet generation from your favorite articles.",
+    "description": "Tweet generation from your favorite content.",
     "permissions": [
         "activeTab",
         "scripting",
