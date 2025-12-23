@@ -185,6 +185,13 @@ async function generateTweetWithAI(articleText) {
     const s = await chrome.storage.local.get(['openaiApiKey', 'aiModel', 'maxArticleLength', 'systemPrompt']);
     const maxChars = parseInt(s.maxArticleLength) || 4000;
     const truncatedText = articleText.substring(0, maxChars);
+
+    console.group('🔍 Article Extraction Debug');
+    console.log('Original Text Length:', articleText.length);
+    console.log('Truncated Text Length:', truncatedText.length);
+    console.log('Text sent to AI (first 500 chars):', truncatedText.substring(0, 500) + '...');
+    console.groupEnd();
+
     const systemPrompt = s.systemPrompt || DEFAULT_PROMPT;
 
     try {
