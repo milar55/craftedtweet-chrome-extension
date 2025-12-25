@@ -501,7 +501,9 @@ function displayHandleResults(handles) {
 function insertHandleIntoTweet(handle) {
     const mention = `@${handle} `;
     const currentVal = tweetText.value;
-    const cursorPos = tweetText.selectionStart;
+    
+    // Use saved cursor position (defaults to end if never set)
+    const cursorPos = lastCursorPosition || currentVal.length;
     
     // Insert at cursor position
     const textBefore = currentVal.substring(0, cursorPos);
@@ -516,6 +518,7 @@ function insertHandleIntoTweet(handle) {
     // Set cursor position after the inserted handle
     const newCursorPos = cursorPos + finalMention.length;
     tweetText.setSelectionRange(newCursorPos, newCursorPos);
+    lastCursorPosition = newCursorPos; // Update saved position
     
     autoGrow();
     updateCharCount();
