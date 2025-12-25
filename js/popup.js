@@ -15,6 +15,8 @@ const autoPostCheckbox = document.getElementById('autoPost');
 const openSettingsLink = document.getElementById('openSettings');
 const autoUrlReplyCheckbox = document.getElementById('autoUrlReply');
 const customPromptInput = document.getElementById('customPromptInput');
+const userSearchInput = document.getElementById('userSearchInput');
+const userSearchResults = document.getElementById('userSearchResults');
 
 // State
 let currentTweet = '';
@@ -54,6 +56,14 @@ function initialize() {
     tweetText.addEventListener('input', () => {
         autoGrow();
         updateCharCount();
+    });
+
+    // User Search Listeners
+    userSearchInput.addEventListener('input', debounce(handleSearchInput, 500));
+    document.addEventListener('click', (e) => {
+        if (!userSearchInput.contains(e.target) && !userSearchResults.contains(e.target)) {
+            userSearchResults.classList.remove('visible');
+        }
     });
 }
 
@@ -327,4 +337,112 @@ async function postReply(parentTweetId, articleUrl) {
     }
     updateStatus('✅ URL reply posted', 'success');
     setTimeout(() => updateStatus(''), 2000);
+}
+
+// --- User Search Functions ---
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+async function handleSearchInput(e) {
+    const query = e.target.value.trim();
+    if (query.length < 2) {
+        userSearchResults.classList.remove('visible');
+        return;
+    }
+
+    try {
+        const users = await searchTwitterUsers(query);
+        displaySearchResults(users);
+    } catch (error) {
+        console.error('Search error:', error);
+        userSearchResults.innerHTML = `<div class="search-error">Error: ${error.message}</div>`;
+        userSearchResults.classList.add('visible');
+    }
+}
+
+async function searchTwitterUsers(query) {
+    const s = await chrome.storage.local.get(['twitterApiKey', 'twitterApiSecret', 'twitterAccessToken', 'twitterAccessTokenSecret']);
+    if (!s.twitterApiKey) {
+        throw new Error('Twitter Login Required (Settings)');
+    }
+
+    const url = 'https://api.twitter.com/1.1/users/search.json';
+    const params = { q: query, count: 5 };
+
+    const authHeader = await OAuthSigner.generateHeader('GET', url, params, {
+        apiKey: s.twitterApiKey,
+        apiSecret: s.twitterApiSecret,
+        accessToken: s.twitterAccessToken,
+        accessTokenSecret: s.twitterAccessTokenSecret
+    });
+
+    // Construct query string manually since OAuth header covers it but fetch needs the URL
+    const queryString = new URLSearchParams(params).toString();
+    const fetchUrl = `${url}?${queryString}`;
+
+    const response = await fetch(fetchUrl, {
+        method: 'GET',
+        headers: {
+            'Authorization': authHeader
+        }
+    });
+
+    if (!response.ok) {
+        // Handle common errors
+        if (response.status === 403) throw new Error('API Access Denied (Basic Tier Required)');
+        if (response.status === 429) throw new Error('Rate Limit Exceeded');
+        throw new Error(`API Error ${response.status}`);
+    }
+
+    return await response.json();
+}
+
+function displaySearchResults(users) {
+    if (!users || users.length === 0) {
+        userSearchResults.innerHTML = '<div class="search-error">No users found</div>';
+        userSearchResults.classList.add('visible');
+        return;
+    }
+
+    userSearchResults.innerHTML = '';
+    users.forEach(user => {
+        const item = document.createElement('div');
+        item.className = 'search-result-item';
+        // Use bigger image if available
+        const avatarUrl = user.profile_image_url_https?.replace('_normal', '_bigger') || '';
+
+        item.innerHTML = `
+            <img src="${avatarUrl}" class="search-result-avatar" onerror="this.src='../icons/icon48.png'">
+            <div class="search-result-info">
+                <span class="search-result-name">${user.name}</span>
+                <span class="search-result-handle">@${user.screen_name}</span>
+            </div>
+        `;
+
+        item.addEventListener('click', () => {
+            const mention = `@${user.screen_name} `;
+            const currentVal = tweetText.value;
+            // Append to end for now as cursor position can be tricky with focus
+            tweetText.value = currentVal + (currentVal.length > 0 && !currentVal.endsWith(' ') ? ' ' : '') + mention;
+
+            userSearchResults.classList.remove('visible');
+            userSearchInput.value = ''; // Clear search
+            autoGrow();
+            updateCharCount();
+        });
+
+        userSearchResults.appendChild(item);
+    });
+
+    userSearchResults.classList.add('visible');
 }
