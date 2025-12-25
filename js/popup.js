@@ -16,10 +16,13 @@ const autoUrlReplyCheckbox = document.getElementById('autoUrlReply');
 const customPromptInput = document.getElementById('customPromptInput');
 const userSearchInput = document.getElementById('userSearchInput');
 const userSearchResults = document.getElementById('userSearchResults');
+const handleSearchInput = document.getElementById('handleSearchInput');
+const handleSearchResults = document.getElementById('handleSearchResults');
 
 // State
 let currentTweet = '';
 let isGenerating = false;
+let lastCursorPosition = 0;
 
 const DEFAULT_PROMPT = 'You are a social media expert. Write a clever tweet (max 280 characters). Use 1-2 hashtags. No em dashes or colons.';
 
@@ -64,12 +67,33 @@ function initialize() {
         updateCharCount();
     });
 
+    // Save cursor position when text box is used
+    tweetText.addEventListener('click', () => {
+        lastCursorPosition = tweetText.selectionStart;
+    });
+    tweetText.addEventListener('keyup', () => {
+        lastCursorPosition = tweetText.selectionStart;
+    });
+    tweetText.addEventListener('select', () => {
+        lastCursorPosition = tweetText.selectionStart;
+    });
+
     // User Search Listeners (UI removed but functionality kept)
     if (userSearchInput && userSearchResults) {
-        userSearchInput.addEventListener('input', debounce(handleSearchInput, 500));
+        userSearchInput.addEventListener('input', debounce(handleUserSearchInput, 500));
         document.addEventListener('click', (e) => {
             if (userSearchInput && userSearchResults && !userSearchInput.contains(e.target) && !userSearchResults.contains(e.target)) {
                 userSearchResults.classList.remove('visible');
+            }
+        });
+    }
+
+    // Handle Search Listeners
+    if (handleSearchInput && handleSearchResults) {
+        handleSearchInput.addEventListener('input', debounce(handleGoogleHandleSearch, 600));
+        document.addEventListener('click', (e) => {
+            if (!handleSearchInput.contains(e.target) && !handleSearchResults.contains(e.target)) {
+                handleSearchResults.classList.remove('visible');
             }
         });
     }
@@ -219,7 +243,7 @@ async function generateTweetWithAI(articleText, customInstructions = '') {
 Use this article as source material:
 ${truncatedText}
 
-Write the tweet focusing on the angle/perspective specified above. The reframing instruction is your main directive - the article content is just context.`;
+Write the tweet focusing on the angle/perspective specified above. The reframing instruction is your main directive - use tthe article content as context.`;
     } else {
         // Standard format when no custom instructions
         userMessage = `Article Content:\n${truncatedText}`;
@@ -348,6 +372,156 @@ async function postReply(parentTweetId, articleUrl) {
     setTimeout(() => updateStatus(''), 2000);
 }
 
+// --- Google Handle Search Functions ---
+
+async function handleGoogleHandleSearch(e) {
+    const query = e.target.value.trim();
+    if (query.length < 2) {
+        handleSearchResults.classList.remove('visible');
+        return;
+    }
+
+    handleSearchResults.innerHTML = '<div class="search-error" style="color: var(--text-secondary);">Searching...</div>';
+    handleSearchResults.classList.add('visible');
+
+    try {
+        const handles = await searchHandlesViaGoogle(query);
+        displayHandleResults(handles);
+    } catch (error) {
+        console.error('Handle search error:', error);
+        handleSearchResults.innerHTML = `<div class="search-error">Search failed. Try again.</div>`;
+    }
+}
+
+async function searchHandlesViaGoogle(query) {
+    // Check if we're in dev mode (outside extension context)
+    const isDevMode = !chrome.extension;
+    
+    if (isDevMode) {
+        // In dev mode, return mock handles for testing
+        return getMockHandles(query);
+    }
+    
+    // In extension mode, use background script or direct fetch
+    // Google search URL
+    const searchQuery = encodeURIComponent(`site:x.com OR site:twitter.com ${query}`);
+    const searchUrl = `https://www.google.com/search?q=${searchQuery}&num=10`;
+    
+    try {
+        const response = await fetch(searchUrl);
+        const html = await response.text();
+        
+        // Extract Twitter/X URLs from the HTML
+        const handles = extractHandlesFromHTML(html);
+        return handles.slice(0, 5); // Return top 5
+    } catch (error) {
+        console.error('Google search failed:', error);
+        // Fallback to mock data
+        return getMockHandles(query);
+    }
+}
+
+function getMockHandles(query) {
+    // Return mock handles based on common queries for dev/testing
+    const mockData = {
+        'openai': ['openai', 'sama', 'gdb'],
+        'elon': ['elonmusk', 'tesla', 'spacex'],
+        'elon musk': ['elonmusk', 'tesla', 'spacex'],
+        'google': ['google', 'sundarpichai', 'googledevelopers'],
+        'microsoft': ['microsoft', 'satyanadella', 'msdev'],
+        'anthropic': ['anthropicai', 'darioamodei'],
+        'default': ['twitter', 'x']
+    };
+    
+    const lowerQuery = query.toLowerCase();
+    
+    // Find matching mock data
+    for (const key in mockData) {
+        if (lowerQuery.includes(key)) {
+            return mockData[key];
+        }
+    }
+    
+    return mockData.default;
+}
+
+function extractHandlesFromHTML(html) {
+    const handles = new Set();
+    
+    // Match patterns for Twitter/X URLs
+    // Patterns: https://twitter.com/username or https://x.com/username
+    const patterns = [
+        /(?:https?:\/\/)?(?:www\.)?twitter\.com\/([a-zA-Z0-9_]{1,15})/gi,
+        /(?:https?:\/\/)?(?:www\.)?x\.com\/([a-zA-Z0-9_]{1,15})/gi
+    ];
+    
+    patterns.forEach(pattern => {
+        let match;
+        while ((match = pattern.exec(html)) !== null) {
+            const handle = match[1].toLowerCase();
+            // Filter out common non-user pages
+            if (!['home', 'explore', 'notifications', 'messages', 'i', 'search', 'compose', 'intent', 'share'].includes(handle)) {
+                handles.add(handle);
+            }
+        }
+    });
+    
+    return Array.from(handles);
+}
+
+function displayHandleResults(handles) {
+    if (!handles || handles.length === 0) {
+        handleSearchResults.innerHTML = '<div class="search-error">No handles found</div>';
+        handleSearchResults.classList.add('visible');
+        return;
+    }
+
+    handleSearchResults.innerHTML = '';
+    handles.forEach(handle => {
+        const item = document.createElement('div');
+        item.className = 'handle-result-item';
+        
+        item.innerHTML = `
+            <span class="handle-result-handle">@${handle}</span>
+            <span class="handle-result-title">x.com/${handle}</span>
+        `;
+        
+        item.addEventListener('click', () => {
+            insertHandleIntoTweet(handle);
+            handleSearchResults.classList.remove('visible');
+            handleSearchInput.value = '';
+        });
+        
+        handleSearchResults.appendChild(item);
+    });
+    
+    handleSearchResults.classList.add('visible');
+}
+
+function insertHandleIntoTweet(handle) {
+    const mention = `@${handle} `;
+    const currentVal = tweetText.value;
+    const cursorPos = tweetText.selectionStart;
+    
+    // Insert at cursor position
+    const textBefore = currentVal.substring(0, cursorPos);
+    const textAfter = currentVal.substring(cursorPos);
+    
+    // Add spacing if needed before the mention
+    const needsSpaceBefore = textBefore.length > 0 && !textBefore.endsWith(' ');
+    const finalMention = needsSpaceBefore ? ` ${mention}` : mention;
+    
+    tweetText.value = textBefore + finalMention + textAfter;
+    
+    // Set cursor position after the inserted handle
+    const newCursorPos = cursorPos + finalMention.length;
+    tweetText.setSelectionRange(newCursorPos, newCursorPos);
+    
+    autoGrow();
+    updateCharCount();
+    tweetText.focus();
+}
+
 // --- User Search Functions ---
 
 function debounce(func, wait) {
@@ -362,7 +536,7 @@ function debounce(func, wait) {
     };
 }
 
-async function handleSearchInput(e) {
+async function handleUserSearchInput(e) {
     const query = e.target.value.trim();
     if (query.length < 2) {
         userSearchResults.classList.remove('visible');

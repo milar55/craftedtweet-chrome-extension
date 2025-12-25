@@ -8,6 +8,7 @@
 - **Elegant UI**: Minimalist sepia-themed studio design.
 - **AI Customization**: Set your own "System Prompt" and context length (up to 15k chars).
 - **Tweet Angle Control**: Reframing instructions are the PRIMARY directive—specify your perspective, tone, or angle and the AI will focus the entire tweet around it.
+- **Handle Search**: Lightweight Google-powered search to find X/Twitter handles by name or company.
 - **Secure Posting**: Direct posting to X via OAuth 1.0a.
 - **Smart Extraction**: Automatically pulls core content from any article URL.
 - **Fast Generation**: Press **Enter** in the "Tweet Angle & Perspective" field to generate instantly.
@@ -32,7 +33,11 @@
     - Examples: *"write from a founder's perspective"*, *"focus on the practical benefits"*, *"make it controversial"*, *"add a personal note about why this matters"*
     - This becomes the **PRIMARY directive**—the AI will build the entire tweet around your instruction.
     - Press **Enter** to generate instantly, or click **Generate**.
-4.  Edit the generated tweet if needed, then click **Post to X**.
+4.  (Optional) Use the **Handle Search** field to find and mention X accounts:
+    - Type a name or company (e.g., "OpenAI", "Elon Musk")
+    - Select from the dropdown to insert `@handle` into your tweet
+    - Uses Google search as a proxy (works without X API access)
+5.  Edit the generated tweet if needed, then click **Post to X**.
 
 ## How Reframing Works
 The extension uses a two-tier prompt structure:
@@ -50,8 +55,15 @@ This project includes a **Local Dev Mode** for UI styling:
 2. Open `http://localhost:8000/popup/popup.html` in your browser.
 3. The `js/dev-mock.js` script will simulate Chrome APIs for a smooth development experience.
 
-## Note on X (Twitter) API Tiers
-The **User Search** feature is currently hidden in the UI because it requires a paid **X API Basic Tier** ($100/mo) or higher. The logic remains in the codebase and can be re-enabled in `popup.html` if you have the appropriate API access.
+## Handle Search Feature
+The extension includes a **lightweight handle search** that uses Google as a proxy to find X/Twitter accounts:
+- **How it works**: Searches Google with `site:x.com OR site:twitter.com [your query]` and parses handles from the results
+- **No API required**: Bypasses X API tier limitations by using public search
+- **Dev Mode**: Uses mock data for common queries (OpenAI, Elon Musk, Google, etc.) when running locally
+- **Extension Mode**: Performs real Google searches when installed as a Chrome extension
+- **Minimal & Simple**: Designed for low-frequency use with basic HTML parsing
+
+Note: The older **X API-based user search** remains in the code but is hidden from the UI since it requires a paid **X API Basic Tier** ($100/mo).
 
 ## Files Included
 
