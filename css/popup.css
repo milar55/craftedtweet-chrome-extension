@@ -163,7 +163,12 @@ header p {
 }
 
 .char-count.warning {
-    color: #dc2626;
+    color: #ff0000;
+    opacity: 1;
+}
+
+.char-count.warning .char-count-right {
+    opacity: 1;
 }
 
 /* Action Bars */
