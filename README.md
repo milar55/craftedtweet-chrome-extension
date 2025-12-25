@@ -7,9 +7,10 @@
 ## Highlights
 - **Elegant UI**: Minimalist sepia-themed studio design.
 - **AI Customization**: Set your own "System Prompt" and context length (up to 15k chars).
+- **Tweet Angle Control**: Reframing instructions are the PRIMARY directive—specify your perspective, tone, or angle and the AI will focus the entire tweet around it.
 - **Secure Posting**: Direct posting to X via OAuth 1.0a.
 - **Smart Extraction**: Automatically pulls core content from any article URL.
-- **Fast Generation**: Press **Enter** in the instructions field to generate instantly.
+- **Fast Generation**: Press **Enter** in the "Tweet Angle & Perspective" field to generate instantly.
 
 ## Chrome Installation
 1.  **Download/Clone** this repository to a local folder.
@@ -27,8 +28,21 @@
 ## Usage
 1.  Navigate to any article.
 2.  Click **Crafted**.
-3.  (Optional) Enter custom instructions (e.g., "Make it funny") and press **Enter**.
+3.  In the **"Tweet Angle & Perspective"** field, specify how you want to frame the tweet:
+    - Examples: *"write from a founder's perspective"*, *"focus on the practical benefits"*, *"make it controversial"*, *"add a personal note about why this matters"*
+    - This becomes the **PRIMARY directive**—the AI will build the entire tweet around your instruction.
+    - Press **Enter** to generate instantly, or click **Generate**.
 4.  Edit the generated tweet if needed, then click **Post to X**.
+
+## How Reframing Works
+The extension uses a two-tier prompt structure:
+1. **System Prompt** (Settings): Defines general style rules (character limit, hashtag usage, formatting).
+2. **Tweet Angle & Perspective** (Popup): Your specific instruction becomes the **PRIMARY TASK** for the AI.
+
+When you provide an angle/perspective, the prompt explicitly tells the AI:
+> "YOUR PRIMARY TASK: [your instruction]. The article content is just context."
+
+This ensures your reframing instructions aren't buried—they become the central focus of the generation.
 
 ## Development
 This project includes a **Local Dev Mode** for UI styling:

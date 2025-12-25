@@ -207,11 +207,22 @@ async function generateTweetWithAI(articleText, customInstructions = '') {
     console.log('Use Custom Instructions:', customInstructions);
     console.groupEnd();
 
-    // Inject custom instructions into the System Prompt for stronger adherence
+    // Use system prompt for format/style guidelines
     const systemPrompt = s.systemPrompt || DEFAULT_PROMPT;
-    let finalSystemPrompt = systemPrompt;
+
+    // Structure the user message to prioritize custom instructions
+    let userMessage;
     if (customInstructions) {
-        finalSystemPrompt += `\n\nCRITICAL INSTRUCTION: You must strictly follow this rule: ${customInstructions}`;
+        // When custom instructions exist, make them the PRIMARY directive
+        userMessage = `YOUR PRIMARY TASK: ${customInstructions}
+
+Use this article as source material:
+${truncatedText}
+
+Write the tweet focusing on the angle/perspective specified above. The reframing instruction is your main directive - the article content is just context.`;
+    } else {
+        // Standard format when no custom instructions
+        userMessage = `Article Content:\n${truncatedText}`;
     }
 
     try {
@@ -224,11 +235,8 @@ async function generateTweetWithAI(articleText, customInstructions = '') {
             body: JSON.stringify({
                 model: s.aiModel || 'gpt-4o-mini',
                 messages: [
-                    { role: 'system', content: finalSystemPrompt },
-                    {
-                        role: 'user',
-                        content: `Article Content:\n${truncatedText}`
-                    }
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: userMessage }
                 ],
                 max_tokens: 280
             })
