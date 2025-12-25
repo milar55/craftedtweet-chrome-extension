@@ -68,6 +68,7 @@ async function handleSave() {
 
     try {
         const getVal = (el) => {
+            if (!el) return '';
             const val = el.value.trim();
             if (val === '' || val.includes('...')) {
                 return el.dataset.stored || '';
@@ -99,9 +100,9 @@ async function handleSave() {
     } finally {
         saveBtn.disabled = false;
         setTimeout(() => {
-            if (status.className.includes('success')) {
-                status.textContent = '';
-                status.className = 'status';
+            if (statusMessage.className.includes('success')) {
+                statusMessage.textContent = '';
+                statusMessage.className = 'status';
             }
         }, 3000);
     }

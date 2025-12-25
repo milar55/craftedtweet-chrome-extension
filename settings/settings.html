@@ -15,54 +15,62 @@
             <p>Configure your studio experience</p>
         </header>
 
-        <section class="config-section">
-            <h2>AI & Prompt</h2>
-            <div class="form-group">
-                <label for="openaiKey">OpenAI API Key</label>
-                <input type="password" id="openaiKey" placeholder="sk-..." />
-            </div>
-            <div class="form-group">
-                <label for="aiModel">AI Model</label>
-                <select id="aiModel">
-                    <option value="gpt-4o-mini">GPT-4o Mini (Fast)</option>
-                    <option value="gpt-4o">GPT-4o (Smart)</option>
-                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="systemPrompt">System Prompt (AI Instructions)</label>
-                <textarea id="systemPrompt" rows="4" placeholder="Instructions for the AI..."></textarea>
-                <p class="help-text">Define how the AI should write your tweets.</p>
-            </div>
-        </section>
+        <div class="settings-grid">
+            <!-- Left Column: Settings -->
+            <section class="config-section">
+                <h2>Configuration</h2>
+                <div class="form-group">
+                    <label for="systemPrompt">System Prompt (AI Instructions)</label>
+                    <textarea id="systemPrompt" placeholder="You are a social media expert..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="aiModel">AI Model</label>
+                    <select id="aiModel">
+                        <option value="gpt-4o-mini">GPT-4o Mini (Fast)</option>
+                        <option value="gpt-4o">GPT-4o (Smart)</option>
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="maxArticleLength">Max Article Length</label>
+                    <input type="number" id="maxArticleLength" value="4000" min="1000" max="15000" />
+                </div>
+                <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="autoUrlReply" style="width: auto; margin: 0;">
+                    <label for="autoUrlReply" style="margin: 0; cursor: pointer;">Auto-URL Reply (Post link as
+                        reply)</label>
+                </div>
+            </section>
 
-        <section class="config-section">
-            <h2>Extraction & Twitter</h2>
-            <div class="form-group">
-                <label for="maxArticleLength">Max Article Length (characters)</label>
-                <input type="number" id="maxArticleLength" value="4000" min="1000" max="15000" />
-                <p class="help-text">Max context sent to AI. High values use more tokens.</p>
-            </div>
+            <!-- Right Column: Keys -->
+            <section class="config-section">
+                <h2>API Credentials</h2>
+                <div class="form-group">
+                    <label for="openaiKey">OpenAI API Key</label>
+                    <input type="password" id="openaiKey" placeholder="sk-..." />
+                </div>
 
-            <div class="grid-form">
-                <div class="form-group">
-                    <label for="twitterApiKey">Twitter API Key</label>
-                    <input type="password" id="twitterApiKey" />
+                <h3 style="font-size: 13px; margin: 12px 0 8px; color: #666;">Twitter API Keys</h3>
+                <div class="grid-form">
+                    <div class="form-group">
+                        <label for="twitterApiKey">API Key</label>
+                        <input type="password" id="twitterApiKey" />
+                    </div>
+                    <div class="form-group">
+                        <label for="twitterApiSecret">API Secret</label>
+                        <input type="password" id="twitterApiSecret" />
+                    </div>
+                    <div class="form-group">
+                        <label for="twitterAccessToken">Token</label>
+                        <input type="password" id="twitterAccessToken" />
+                    </div>
+                    <div class="form-group">
+                        <label for="twitterAccessTokenSecret">Secret</label>
+                        <input type="password" id="twitterAccessTokenSecret" />
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="twitterApiSecret">Twitter API Secret</label>
-                    <input type="password" id="twitterApiSecret" />
-                </div>
-                <div class="form-group">
-                    <label for="twitterAccessToken">Access Token</label>
-                    <input type="password" id="twitterAccessToken" />
-                </div>
-                <div class="form-group">
-                    <label for="twitterAccessTokenSecret">Access Secret</label>
-                    <input type="password" id="twitterAccessTokenSecret" />
-                </div>
-            </div>
-        </section>
+            </section>
+        </div>
 
         <div class="controls">
             <button class="btn" id="saveBtn">Save Changes</button>

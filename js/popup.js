@@ -14,6 +14,7 @@ const statusMessage = document.getElementById('status');
 const autoPostCheckbox = document.getElementById('autoPost');
 const openSettingsLink = document.getElementById('openSettings');
 const autoUrlReplyCheckbox = document.getElementById('autoUrlReply');
+const customPromptInput = document.getElementById('customPromptInput');
 
 // State
 let currentTweet = '';
@@ -104,7 +105,8 @@ async function handleGenerateClick() {
         }
 
         updateStatus('Generating...', 'loading');
-        const tweet = await generateTweetWithAI(articleText);
+        const customInstructions = customPromptInput.value.trim();
+        const tweet = await generateTweetWithAI(articleText, customInstructions);
 
         if (!tweet) {
             updateStatus('Failed to generate', 'error');
@@ -181,7 +183,7 @@ async function handleRegenerateClick() {
     handleGenerateClick();
 }
 
-async function generateTweetWithAI(articleText) {
+async function generateTweetWithAI(articleText, customInstructions = '') {
     const s = await chrome.storage.local.get(['openaiApiKey', 'aiModel', 'maxArticleLength', 'systemPrompt']);
     const maxChars = parseInt(s.maxArticleLength) || 4000;
     const truncatedText = articleText.substring(0, maxChars);
@@ -189,10 +191,15 @@ async function generateTweetWithAI(articleText) {
     console.group('🔍 Article Extraction Debug');
     console.log('Original Text Length:', articleText.length);
     console.log('Truncated Text Length:', truncatedText.length);
-    console.log('Text sent to AI (first 500 chars):', truncatedText.substring(0, 500) + '...');
+    console.log('Use Custom Instructions:', customInstructions);
     console.groupEnd();
 
+    // Inject custom instructions into the System Prompt for stronger adherence
     const systemPrompt = s.systemPrompt || DEFAULT_PROMPT;
+    let finalSystemPrompt = systemPrompt;
+    if (customInstructions) {
+        finalSystemPrompt += `\n\nCRITICAL INSTRUCTION: You must strictly follow this rule: ${customInstructions}`;
+    }
 
     try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -204,8 +211,11 @@ async function generateTweetWithAI(articleText) {
             body: JSON.stringify({
                 model: s.aiModel || 'gpt-4o-mini',
                 messages: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: `Article: ${truncatedText}` }
+                    { role: 'system', content: finalSystemPrompt },
+                    {
+                        role: 'user',
+                        content: `Article Content:\n${truncatedText}`
+                    }
                 ],
                 max_tokens: 280
             })
