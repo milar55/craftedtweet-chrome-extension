@@ -28,24 +28,20 @@
             <textarea id="tweetText" class="tweet-text"
                 placeholder="Paste article URL and click 'Generate'..."></textarea>
             <div id="charCountContainer" class="char-count">
-                <span id="charCount">0</span>/280
+                <div class="char-count-left">
+                    <button id="copyBtn" class="copy-icon-btn" title="Copy to Clipboard">📋</button>
+                </div>
+                <div class="char-count-right">
+                    <span id="charCount">0</span>/280
+                </div>
             </div>
         </div>
 
-        <div class="action-bar secondary">
-            <button class="btn btn-small" id="generateBtn" title="Generate New">
+        <div class="action-bar main-actions">
+            <button class="btn btn-generate" id="generateBtn" title="Generate New">
                 <span>✨ Generate</span>
             </button>
-            <button class="btn btn-small" id="regenerateBtn" title="Regenerate Variation">
-                <span>🔄 Again</span>
-            </button>
-            <button class="btn btn-small" id="copyBtn" title="Copy to Clipboard">
-                <span>📋 Copy</span>
-            </button>
-        </div>
-
-        <div class="action-bar primary">
-            <button class="btn btn-large" id="postBtn" disabled>
+            <button class="btn btn-post" id="postBtn" disabled title="Post to X">
                 <span>Post to X</span>
             </button>
         </div>

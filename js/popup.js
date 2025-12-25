@@ -4,7 +4,6 @@
 
 // DOM elements
 const generateBtn = document.getElementById('generateBtn');
-const regenerateBtn = document.getElementById('regenerateBtn');
 const copyBtn = document.getElementById('copyBtn');
 const postBtn = document.getElementById('postBtn');
 const tweetText = document.getElementById('tweetText');
@@ -58,7 +57,6 @@ function initialize() {
     const autoUrlReplyCheckbox = document.getElementById('autoUrlReply');
     autoUrlReplyCheckbox.addEventListener('change', () => chrome.storage.local.set({ autoUrlReply: autoUrlReplyCheckbox.checked }));
     copyBtn.addEventListener('click', handleCopyClick);
-    regenerateBtn.addEventListener('click', handleRegenerateClick);
     openSettingsLink.addEventListener('click', () => chrome.runtime.openOptionsPage());
 
     tweetText.addEventListener('input', () => {
@@ -198,11 +196,6 @@ async function handleCopyClick() {
     }
 }
 
-async function handleRegenerateClick() {
-    if (isGenerating) return;
-    handleGenerateClick();
-}
-
 async function generateTweetWithAI(articleText, customInstructions = '') {
     const s = await chrome.storage.local.get(['openaiApiKey', 'aiModel', 'maxArticleLength', 'systemPrompt']);
     const maxChars = parseInt(s.maxArticleLength) || 4000;
@@ -292,7 +285,6 @@ function displayTweet(tweet) {
     tweetText.value = tweet;
     autoGrow();
     updateCharCount();
-    regenerateBtn.disabled = false;
     copyBtn.disabled = false;
     postBtn.disabled = false;
 }
@@ -311,7 +303,6 @@ function updateCharCount() {
 function resetState() {
     isGenerating = false;
     generateBtn.disabled = false;
-    regenerateBtn.disabled = true;
     copyBtn.disabled = true;
     postBtn.disabled = true;
     updateStatus('');
