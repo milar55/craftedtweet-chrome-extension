@@ -9,6 +9,7 @@
 - **AI Customization**: Set your own "System Prompt" and context length (up to 15k chars).
 - **Secure Posting**: Direct posting to X via OAuth 1.0a.
 - **Smart Extraction**: Automatically pulls core content from any article URL.
+- **Fast Generation**: Press **Enter** in the instructions field to generate instantly.
 
 ## Chrome Installation
 1.  **Download/Clone** this repository to a local folder.
@@ -25,9 +26,18 @@
 
 ## Usage
 1.  Navigate to any article.
-2.  Click **Crafted** and hit **✨ Generate**.
-3.  Edit the text if needed, then click **Post to X**.
+2.  Click **Crafted**.
+3.  (Optional) Enter custom instructions (e.g., "Make it funny") and press **Enter**.
+4.  Edit the generated tweet if needed, then click **Post to X**.
 
+## Development
+This project includes a **Local Dev Mode** for UI styling:
+1. Run `python -m http.server 8000` (or any local server) in the root.
+2. Open `http://localhost:8000/popup/popup.html` in your browser.
+3. The `js/dev-mock.js` script will simulate Chrome APIs for a smooth development experience.
+
+## Note on X (Twitter) API Tiers
+The **User Search** feature is currently hidden in the UI because it requires a paid **X API Basic Tier** ($100/mo) or higher. The logic remains in the codebase and can be re-enabled in `popup.html` if you have the appropriate API access.
 
 ## Files Included
 
@@ -37,6 +47,7 @@
 *   `js/popup.js`: The JavaScript for the popup, including tweet generation and posting logic.
 *   `js/content.js`: The content script for extracting article text.
 *   `js/background.js`: The background service worker.
+*   `js/dev-mock.js`: Mock API for local UI development.
 *   `icons/`: Folder containing the extension icons.
 *   `settings/settings.html`: Settings page for API key configuration
 *   `css/settings.css`: CSS for the settings page

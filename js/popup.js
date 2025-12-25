@@ -46,6 +46,14 @@ function initialize() {
 
     generateBtn.addEventListener('click', handleGenerateClick);
     postBtn.addEventListener('click', handlePostClick);
+
+    // Allow Enter key to trigger generation in custom prompt input
+    customPromptInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            handleGenerateClick();
+        }
+    });
+
     autoPostCheckbox.addEventListener('change', () => chrome.storage.local.set({ autoPost: autoPostCheckbox.checked }));
     const autoUrlReplyCheckbox = document.getElementById('autoUrlReply');
     autoUrlReplyCheckbox.addEventListener('change', () => chrome.storage.local.set({ autoUrlReply: autoUrlReplyCheckbox.checked }));
@@ -58,13 +66,15 @@ function initialize() {
         updateCharCount();
     });
 
-    // User Search Listeners
-    userSearchInput.addEventListener('input', debounce(handleSearchInput, 500));
-    document.addEventListener('click', (e) => {
-        if (!userSearchInput.contains(e.target) && !userSearchResults.contains(e.target)) {
-            userSearchResults.classList.remove('visible');
-        }
-    });
+    // User Search Listeners (UI removed but functionality kept)
+    if (userSearchInput && userSearchResults) {
+        userSearchInput.addEventListener('input', debounce(handleSearchInput, 500));
+        document.addEventListener('click', (e) => {
+            if (userSearchInput && userSearchResults && !userSearchInput.contains(e.target) && !userSearchResults.contains(e.target)) {
+                userSearchResults.classList.remove('visible');
+            }
+        });
+    }
 }
 
 function autoGrow() {
@@ -365,7 +375,10 @@ async function handleSearchInput(e) {
         displaySearchResults(users);
     } catch (error) {
         console.error('Search error:', error);
-        userSearchResults.innerHTML = `<div class="search-error">Error: ${error.message}</div>`;
+        userSearchResults.innerHTML = `<div class="search-error">
+            <p>Search failed: ${error.message}</p>
+            ${error.message.includes('Basic Tier') ? '<p style="font-size: 11px; margin-top: 4px; opacity: 0.8;">Note: Twitter v1.1 search requires a paid API tier.</p>' : ''}
+        </div>`;
         userSearchResults.classList.add('visible');
     }
 }
