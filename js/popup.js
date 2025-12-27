@@ -116,7 +116,7 @@ async function handleGenerateClick() {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (!tab || !tab.url || !tab.url.startsWith('http')) {
             updateStatus('Open an article first', 'error');
-            resetState();
+            resetState({ clearStatus: false });
             return;
         }
 
@@ -124,7 +124,7 @@ async function handleGenerateClick() {
         const settings = await chrome.storage.local.get(['openaiApiKey']);
         if (!settings.openaiApiKey) {
             updateStatus('Missing OpenAI API Key. Check Settings.', 'error');
-            resetState();
+            resetState({ clearStatus: false });
             return;
         }
 
@@ -142,7 +142,7 @@ async function handleGenerateClick() {
 
         if (!articleText || articleText.length < 50) {
             updateStatus('No article text found', 'error');
-            resetState();
+            resetState({ clearStatus: false });
             return;
         }
 
@@ -152,7 +152,7 @@ async function handleGenerateClick() {
 
         if (!tweet) {
             updateStatus('Failed to generate', 'error');
-            resetState();
+            resetState({ clearStatus: false });
             return;
         }
 
@@ -225,6 +225,10 @@ async function generateTweetWithAI(articleText, customInstructions = '') {
     const maxChars = parseInt(s.maxArticleLength) || 4000;
     const truncatedText = articleText.substring(0, maxChars);
 
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/c5afcacc-e24a-4e00-ad1c-3f0965aaa1e9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:223',message:'generateTweetWithAI entry',data:{articleLength:articleText.length,truncatedLength:truncatedText.length,customInstructions:customInstructions,model:s.aiModel,maxArticleLength:s.maxArticleLength},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'H1,H4'})}).catch(()=>{});
+    // #endregion
+
     console.group('🔍 Article Extraction Debug');
     console.log('Original Text Length:', articleText.length);
     console.log('Truncated Text Length:', truncatedText.length);
@@ -243,33 +247,79 @@ async function generateTweetWithAI(articleText, customInstructions = '') {
 Use this article as source material:
 ${truncatedText}
 
-Write the tweet focusing on the angle/perspective specified above. The reframing instruction is your main directive - use tthe article content as context.`;
+Write the tweet focusing on the angle/perspective specified above. The reframing instruction is your main directive - use the article content as context.`;
     } else {
         // Standard format when no custom instructions
         userMessage = `Article Content:\n${truncatedText}`;
     }
 
+    // #region agent log
+    fetch('http://127.0.0.1:7244/ingest/c5afcacc-e24a-4e00-ad1c-3f0965aaa1e9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:251',message:'Messages constructed',data:{systemPromptLength:systemPrompt.length,userMessageLength:userMessage.length,hasCustomInstructions:!!customInstructions},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'H4'})}).catch(()=>{});
+    // #endregion
+
     try {
+        // Reasoning models (gpt-5-mini, o1-mini) need higher token limits
+        // because they use tokens for internal reasoning before generating output
+        const isReasoningModel = s.aiModel && (s.aiModel.includes('gpt-5') || s.aiModel.includes('o1-'));
+        const maxTokens = isReasoningModel ? 2000 : 280;
+        
+        const requestBody = {
+            model: s.aiModel || 'gpt-4o-mini',
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userMessage }
+            ],
+            max_completion_tokens: maxTokens
+        };
+
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/c5afcacc-e24a-4e00-ad1c-3f0965aaa1e9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:271',message:'Request body prepared',data:{requestBody:requestBody,isReasoningModel:isReasoningModel,maxTokens:maxTokens},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'H1,H4'})}).catch(()=>{});
+        // #endregion
+
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${s.openaiApiKey}`
             },
-            body: JSON.stringify({
-                model: s.aiModel || 'gpt-4o-mini',
-                messages: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: userMessage }
-                ],
-                max_tokens: 280
-            })
+            body: JSON.stringify(requestBody)
         });
 
-        if (!response.ok) throw new Error(`API ${response.status}`);
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/c5afcacc-e24a-4e00-ad1c-3f0965aaa1e9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:282',message:'Response received',data:{status:response.status,statusText:response.statusText,ok:response.ok},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'H1,H2'})}).catch(()=>{});
+        // #endregion
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            // #region agent log
+            fetch('http://127.0.0.1:7244/ingest/c5afcacc-e24a-4e00-ad1c-3f0965aaa1e9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:290',message:'Response not ok',data:{errorData:errorData,status:response.status},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'H1,H4'})}).catch(()=>{});
+            // #endregion
+            throw new Error(errorData.error?.message || `API ${response.status}`);
+        }
         const data = await response.json();
-        return data.choices[0].message.content.trim();
+        
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/c5afcacc-e24a-4e00-ad1c-3f0965aaa1e9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:298',message:'Response JSON parsed',data:{fullResponse:data,hasChoices:!!data?.choices,choicesLength:data?.choices?.length,firstChoice:data?.choices?.[0],messageContent:data?.choices?.[0]?.message?.content},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'H2,H3'})}).catch(()=>{});
+        // #endregion
+
+        const messageContent = data?.choices?.[0]?.message?.content;
+        if (!messageContent || !messageContent.trim()) {
+            console.error('OpenAI response missing content', data);
+            // #region agent log
+            fetch('http://127.0.0.1:7244/ingest/c5afcacc-e24a-4e00-ad1c-3f0965aaa1e9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:306',message:'Empty content detected',data:{messageContent:messageContent,contentType:typeof messageContent,data:data},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'H2,H3'})}).catch(()=>{});
+            // #endregion
+            throw new Error('OpenAI returned an empty response');
+        }
+        
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/c5afcacc-e24a-4e00-ad1c-3f0965aaa1e9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:313',message:'Successful generation',data:{contentLength:messageContent.length,content:messageContent.substring(0,100)},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'ALL'})}).catch(()=>{});
+        // #endregion
+        
+        return messageContent.trim();
     } catch (error) {
+        // #region agent log
+        fetch('http://127.0.0.1:7244/ingest/c5afcacc-e24a-4e00-ad1c-3f0965aaa1e9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'popup.js:321',message:'Error caught',data:{errorMessage:error.message,errorStack:error.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'ALL'})}).catch(()=>{});
+        // #endregion
         throw error;
     }
 }
@@ -332,12 +382,14 @@ function updateCharCount() {
     charCountContainer.className = len > 280 ? 'char-count warning' : 'char-count';
 }
 
-function resetState() {
+function resetState({ clearStatus = true } = {}) {
     isGenerating = false;
     generateBtn.disabled = false;
     copyBtn.disabled = true;
     postBtn.disabled = true;
-    updateStatus('');
+    if (clearStatus) {
+        updateStatus('');
+    }
 }
 // Helper to post a reply containing the article URL
 async function postReply(parentTweetId, articleUrl) {
